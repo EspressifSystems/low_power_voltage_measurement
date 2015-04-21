@@ -47,8 +47,8 @@ if __name__ =="__main__":
     #2.set the router params: ssid and password
     #3.run&done
     
-    config_device(ssid="WIFI_SSID",
-                  password="YOU_WIFI_PASSWORD",
+    config_device(ssid="your_router_ssid",
+                  password="your_router_password",
                   token="1234567890123456789012345678901234567890",
                   softap_ip="192.168.4.1")
     

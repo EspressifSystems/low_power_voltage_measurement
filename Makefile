@@ -229,7 +229,6 @@ ifeq ($(app), 0)
 	@echo "Generate eagle.flash.bin and eagle.irom0text.bin successully in folder bin."
 	@echo "eagle.flash.bin-------->0x00000"
 	@echo "eagle.irom0text.bin---->0x40000"
-	@python ../tools/add_disable_rf_cmd.py ../bin/eagle.flash.bin
 else
     ifeq ($(boot), new)
 		@python ../tools/gen_appbin.py $< 2 $(mode) $(freqdiv) $(size)
@@ -244,7 +243,6 @@ else
 	@echo "Generate $(BIN_NAME).bin successully in folder bin/upgrade."
 	@echo "boot.bin------------>0x00000"
 	@echo "$(BIN_NAME).bin--->$(addr)"
-	@python ../tools/add_disable_rf_cmd.py ../bin/upgrade/$(BIN_NAME).bin
 endif
 
 	@echo "!!!"

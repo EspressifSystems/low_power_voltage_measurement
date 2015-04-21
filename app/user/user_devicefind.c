@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2013-2014 Espressif Systems (Wuxi)
+ * Copyright 2013-2014 Espressif Systems 
  *
  * FileName: user_devicefind.c
  *
@@ -19,17 +19,7 @@
 #include "user_devicefind.h"
 
 const char *device_find_request = "Are You Espressif IOT Smart Device?";
-#if PLUG_DEVICE
-const char *device_find_response_ok = "I'm Plug.";
-#elif LIGHT_DEVICE
-const char *device_find_response_ok = "I'm Light.";
-#elif SENSOR_DEVICE
-#if HUMITURE_SUB_DEVICE
-const char *device_find_response_ok = "I'm Humiture.";
-#elif FLAMMABLE_GAS_SUB_DEVICE
-const char *device_find_response_ok = "I'm Flammable Gas.";
-#endif
-#endif
+const char *device_find_response_ok = "YES. I am Smart!";
 
 /*---------------------------------------------------------------------------*/
 LOCAL struct espconn ptrespconn;
@@ -102,8 +92,7 @@ user_devicefind_recv(void *arg, char *pusrdata, unsigned short length)
  * Returns      : none
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-user_devicefind_init(void)
-{
+user_devicefind_init(void) {
     ptrespconn.type = ESPCONN_UDP;
     ptrespconn.proto.udp = (esp_udp *)os_zalloc(sizeof(esp_udp));
     ptrespconn.proto.udp->local_port = 1025;

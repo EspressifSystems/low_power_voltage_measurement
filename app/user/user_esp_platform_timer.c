@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2013-2014 Espressif Systems (Wuxi)
+ * Copyright 2013-2014 Espressif Systems 
  *
  * FileName: esp_platform_user_timer.c
  *
@@ -52,9 +52,7 @@ void esp_platform_timer_action(struct esp_platform_wait_timer_param   *timer_wai
  * Parameters   : p1 , p2 ,splits[]
  * Returns      : the number of splits
 *******************************************************************************/
-uint16 ICACHE_FLASH_ATTR
-split(char *p1, char *p2, char *splits[])
-{
+uint16 ICACHE_FLASH_ATTR split(char *p1, char *p2, char *splits[]) {
     int i = 0;
     int j = 0;
 
@@ -125,19 +123,15 @@ esp_platform_find_min_time(struct esp_platform_wait_timer_param *timer_wait_para
  * Parameters   : count -- The number of timers given by server
  * Returns      : none
 *******************************************************************************/
-void ICACHE_FLASH_ATTR
-user_platform_timer_first_start(uint16 count)
-{
+void ICACHE_FLASH_ATTR user_platform_timer_first_start(uint16 count) {
     int i = 0;
     struct esp_platform_wait_timer_param timer_wait_param[100] = {0};
 
     ESP_DBG("current timestamp= %ds\n", timestamp);
-
     timestamp = timestamp + min_wait_second;
 
     for (i = 0 ; i < count ; i++) {
         char *str = timer_splits[i];
-
         if (indexof(str, "f", 0) == 0) {
             char *fixed_wait[2];
 
@@ -210,26 +204,6 @@ user_esp_platform_device_action(struct wait_param *pwait_action)
 
     ESP_DBG("there is %d action at the same time\n", pwait_action->action_number);
 
-#if PLUG_DEVICE
-    for (i = 0; i < action_number && pwait_action->action[i][0] != '0'; i++) {
-        ESP_DBG("%s", pwait_action->action[i]);
-
-        if (os_strcmp(pwait_action->action[i], "on_switch", 9) == 0) {
-            user_plug_set_status(0x01);
-        } else if (os_strcmp(pwait_action->action[i], "off_switch", 10) == 0) {
-            user_plug_set_status(0x00);
-        } else if (os_strcmp(pwait_action->action[i], "on_off_switch", 13) == 0) {
-            if (user_plug_get_status() == 0) {
-                user_plug_set_status(0x01);
-            } else {
-                user_plug_set_status(0x00);
-            }
-        } else {
-            return;
-        }
-    }
-    user_platform_timer_first_start(count);
-#endif
 }
 
 /******************************************************************************

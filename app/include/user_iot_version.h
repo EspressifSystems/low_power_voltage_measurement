@@ -12,13 +12,7 @@
 #define VERSION_TYPE      "b"
 //#define VERSION_TYPE   	  "v"
 
-#if LIGHT_DEVICE
-#define device_type       45772
-#elif PLUG_DEVICE
-#define device_type       23701
-#elif SENSOR_DEVICE
 #define device_type       12335
-#endif
 
 
 #define ONLINE_UPGRADE    0

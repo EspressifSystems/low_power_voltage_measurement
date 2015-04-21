@@ -7,6 +7,8 @@ import string
 import httplib
 import urllib2
 import json
+import matplotlib.pyplot as plt
+import numpy as np
 
 DATETIME_FORMAT = '%Y%m%d-%H-%M-%S'
 now = datetime.datetime.now()
@@ -25,13 +27,12 @@ def get_test_data(key='26484cd14129a0c64ed1bf9608fec6cabb0fd0c9',start='',end=''
         if not time_cal_list[-1]>datetime.datetime.strptime(start, '%Y-%m-%d %H:%M:%S'): break
         end_tmp = t[-1]
 
-    for i in range(len(voltage_list)-1):
-        if voltage_list[i]<voltage_list[i+1]-0.01: 
-            voltage_list[i]=voltage_list[i+1]
-    import matplotlib.pyplot as plt
-    import numpy as np
+    #for i in range(len(voltage_list)-1):
+    #    if voltage_list[i]<voltage_list[i+1]-0.01: 
+    #        voltage_list[i]=voltage_list[i+1]
     
-    plt.plot(time_cal_list,voltage_list)
+    plt.plot(time_cal_list,voltage_list,'r-')
+    plt.plot(time_cal_list,voltage_list,'b.')
     plt.show()
 
 def get_test_data_sub(devCnt=10,key='26484cd14129a0c64ed1bf9608fec6cabb0fd0c9',start='',end='',offset=0, datastream='supply-voltage'):
@@ -66,21 +67,25 @@ def get_test_data_sub(devCnt=10,key='26484cd14129a0c64ed1bf9608fec6cabb0fd0c9',s
         time_list.append( dict_tmp["updated"] )
         idx_list.append( dict_tmp['x'])
         val_data_list.append( dict_tmp['y'])
-    time_cal_list = [ 
-        (
+    time_cal_list = []
+    for i in range(len(val_data_list)):
+        time_cal_list.append( 
             datetime.datetime.strptime(time_list[i],'%Y-%m-%d %H:%M:%S') - 
-            datetime.timedelta(minutes=(19-idx_list[i]))
-        ) for i in range(len(val_data_list))
-    ] 
+            datetime.timedelta(minutes=((19-idx_list[i]))*60./60.)
+        )
+    #plt.plot(val_data_list)
+    #plt.show()
     voltage_list = [ i/1024.0 for i in val_data_list]
+    #print voltage_list
     return [time_cal_list, voltage_list]
 
     
 
 if __name__ == '__main__':
     key = open('../bin/key.bin','r').readline().replace('\xFF','')
+    print "Key is", key
     get_test_data(key=key, datastream='supply-voltage',
-                  start='2015-03-02 00:00:00',
+                  start='2015-04-20 13:30:00',
                   end=dir_datetime,offset=0)
     #devCnt : data num (<1000)
     #key: sensor devkey
