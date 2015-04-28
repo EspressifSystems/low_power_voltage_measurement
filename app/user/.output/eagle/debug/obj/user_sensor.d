@@ -20,5 +20,4 @@
  ../../include/user_interface.h ../../include/os_type.h \
  ../../include/ip_addr.h ../../include/queue.h ../../include/spi_flash.h \
  ../include/user_sensor.h ../include/user_config.h \
- ../include/driver/key.h ../../include/gpio.h \
- ../include/driver/i2c_master.h
+ ../include/driver/key.h ../../include/gpio.h

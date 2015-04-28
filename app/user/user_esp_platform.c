@@ -25,7 +25,7 @@
 
 
 #define ESP_DEBUG
-#ifdef ESP_DEBUG
+#ifdef  ESP_DEBUG
 #define ESP_DBG os_printf
 #else
 #define ESP_DBG
@@ -76,15 +76,13 @@ void user_esp_platform_check_ip(uint8 reset_flag);
  * Parameters   : param--the parame point which write the flash
  * Returns      : none
 *******************************************************************************/
-void ICACHE_FLASH_ATTR
-user_esp_platform_load_param(struct esp_platform_saved_param *param)
-{
+void ICACHE_FLASH_ATTR user_esp_platform_load_param(struct esp_platform_saved_param *param) {
     struct esp_platform_sec_flag_param flag;
 
     spi_flash_read((ESP_PARAM_START_SEC + ESP_PARAM_FLAG) * SPI_FLASH_SEC_SIZE,
                    (uint32 *)&flag, sizeof(struct esp_platform_sec_flag_param));
 
-    if (flag.flag == 0) {
+    if (flag.flag==0) {
         spi_flash_read((ESP_PARAM_START_SEC + ESP_PARAM_SAVE_0) * SPI_FLASH_SEC_SIZE,
                        (uint32 *)param, sizeof(struct esp_platform_saved_param));
     } else {
@@ -108,7 +106,7 @@ user_esp_platform_save_param(struct esp_platform_saved_param *param)
     spi_flash_read((ESP_PARAM_START_SEC + ESP_PARAM_FLAG) * SPI_FLASH_SEC_SIZE,
                    (uint32 *)&flag, sizeof(struct esp_platform_sec_flag_param));
 
-    if (flag.flag == 0) {
+    if (flag.flag==0) {
         spi_flash_erase_sector(ESP_PARAM_START_SEC + ESP_PARAM_SAVE_1);
         spi_flash_write((ESP_PARAM_START_SEC + ESP_PARAM_SAVE_1) * SPI_FLASH_SEC_SIZE,
                         (uint32 *)param, sizeof(struct esp_platform_saved_param));
@@ -136,7 +134,7 @@ user_esp_platform_save_param(struct esp_platform_saved_param *param)
 void ICACHE_FLASH_ATTR
 user_esp_platform_get_token(uint8_t *token)
 {
-    if (token == NULL) {
+    if (token==NULL) {
         return;
     }
 
@@ -179,8 +177,8 @@ void ICACHE_FLASH_ATTR user_esp_platform_set_connect_status(uint8 status) {
 *******************************************************************************/
 uint8 ICACHE_FLASH_ATTR user_esp_platform_get_connect_status(void) {
     uint8 status = wifi_station_get_connect_status();
-    if (status == STATION_GOT_IP) {
-        status = (device_status == 0) ? DEVICE_CONNECTING : device_status;
+    if (status==STATION_GOT_IP) {
+        status = (device_status==0) ? DEVICE_CONNECTING : device_status;
     }
 
     ESP_DBG("status %d\n", status);
@@ -200,17 +198,17 @@ int ICACHE_FLASH_ATTR user_esp_platform_parse_nonce(char *pbuffer) {
     int nonce = 0;
     pstr = (char *)os_strstr(pbuffer, "\"nonce\": ");
 
-    if (pstr != NULL) {
+    if (pstr!=NULL) {
         pstr += 9;
         pparse = (char *)os_strstr(pstr, ",");
 
-        if (pparse != NULL) { os_memcpy(noncestr, pstr, pparse - pstr); } 
+        if (pparse!=NULL) { os_memcpy(noncestr, pstr, pparse - pstr); } 
         else {
             pparse = (char *)os_strstr(pstr, "}");
-            if (pparse != NULL) { os_memcpy(noncestr, pstr, pparse - pstr); } 
+            if (pparse!=NULL) { os_memcpy(noncestr, pstr, pparse - pstr); } 
             else {
                 pparse = (char *)os_strstr(pstr, "]");
-                if (pparse != NULL) { os_memcpy(noncestr, pstr, pparse - pstr); }
+                if (pparse!=NULL) { os_memcpy(noncestr, pstr, pparse - pstr); }
                 else { return 0; }
             }
         }
@@ -233,7 +231,7 @@ void ICACHE_FLASH_ATTR user_esp_platform_get_info(struct espconn *pconn, uint8 *
     pbuf = (char *)os_zalloc(packet_size);
     nonce = user_esp_platform_parse_nonce(pbuffer);
 
-    if (pbuf != NULL) {
+    if (pbuf!=NULL) {
         ESP_DBG("%s\n", pbuf);
 #ifdef CLIENT_SSL_ENABLE
         espconn_secure_sent(pconn, pbuf, os_strlen(pbuf));
@@ -287,7 +285,7 @@ user_esp_platform_discon_cb(void *arg)
     ESP_DBG("user_esp_platform_discon_cb\n");
 
 
-    if (pespconn == NULL) {
+    if (pespconn==NULL) {
         return;
     }
 
@@ -298,7 +296,7 @@ user_esp_platform_discon_cb(void *arg)
 #if SENSOR_DEVICE
 #ifdef SENSOR_DEEP_SLEEP
 
-    if (wifi_get_opmode() == STATION_MODE) {
+    if (wifi_get_opmode()==STATION_MODE) {
         /***add by tzx for saving ip_info to avoid dhcp_client start****/
         wifi_get_ip_info(STATION_IF, &ipconfig);
 
@@ -382,10 +380,10 @@ LOCAL void ICACHE_FLASH_ATTR user_esp_platform_sent(struct espconn *pespconn) {
     char *pbuf = (char *)os_zalloc(packet_size);
     os_memcpy(devkey, esp_param.devkey, 40);
 
-    if (esp_param.activeflag == 0xFF) { esp_param.activeflag = 0; }
+    if (esp_param.activeflag==0xFF) { esp_param.activeflag = 0; }
 
-    if (pbuf != NULL) {
-        if (esp_param.activeflag == 0) {  // Has not registered the account
+    if (pbuf!=NULL) {
+        if (esp_param.activeflag==0) {  // Has not registered the account
             uint8 token[token_size] = {0};
             uint8 bssid[6];
             active_nonce = rand();
@@ -451,16 +449,16 @@ user_esp_platform_recv_cb(void *arg, char *pusrdata, unsigned short length)
 
     ESP_DBG("user_esp_platform_recv_cb %s\n", pusrdata);
 
-    if (length == 1460) {
+    if (length==1460) {
         os_memcpy(pbuffer, pusrdata, length);
     } else {
         struct espconn *pespconn = (struct espconn *)arg;
 
         os_memcpy(pbuffer + os_strlen(pbuffer), pusrdata, length);
 
-        if ((pstr = (char *)os_strstr(pbuffer, "\"activate_status\": ")) != NULL &&
-                user_esp_platform_parse_nonce(pbuffer) == active_nonce) {
-            if (os_strncmp(pstr + 19, "1", 1) == 0) {
+        if ((pstr = (char *)os_strstr(pbuffer, "\"activate_status\": "))!=NULL &&
+                user_esp_platform_parse_nonce(pbuffer)==active_nonce) {
+            if (os_strncmp(pstr + 19, "1", 1)==0) {
                 ESP_DBG("device activates successful.\n");
 
                 device_status = DEVICE_ACTIVE_DONE;
@@ -478,8 +476,8 @@ user_esp_platform_recv_cb(void *arg, char *pusrdata, unsigned short length)
         }
 
 #if SENSOR_DEVICE
-        else if ((pstr = (char *)os_strstr(pbuffer, "\"status\":")) != NULL) {
-            if (os_strncmp(pstr + 10, "200", 3) != 0) {
+        else if ((pstr = (char *)os_strstr(pbuffer, "\"status\":"))!=NULL) {
+            if (os_strncmp(pstr + 10, "200", 3)!=0) {
                 ESP_DBG("message upload failed.\n");
             } else {
                 count++;
@@ -492,7 +490,7 @@ user_esp_platform_recv_cb(void *arg, char *pusrdata, unsigned short length)
         }
 
 #endif
-        else if ((pstr = (char *)os_strstr(pbuffer, "device")) != NULL) {
+        else if ((pstr = (char *)os_strstr(pbuffer, "device"))!=NULL) {
         }
 
         os_memset(pbuffer, 0, sizeof(pbuffer));
@@ -517,14 +515,14 @@ user_esp_platform_ap_change(void)
     current_id = wifi_station_get_current_ap_id();
     ESP_DBG("current ap id =%d\n", current_id);
 
-    if (current_id == AP_CACHE_NUMBER - 1) {
+    if (current_id==AP_CACHE_NUMBER - 1) {
        i = 0;
     } else {
        i = current_id + 1;
     }
-    while (wifi_station_ap_change(i) != true) {
+    while (wifi_station_ap_change(i)!=true) {
        i++;
-       if (i == AP_CACHE_NUMBER - 1) {
+       if (i==AP_CACHE_NUMBER - 1) {
            i = 0;
        }
     }
@@ -540,7 +538,7 @@ user_esp_platform_ap_change(void)
 LOCAL bool ICACHE_FLASH_ATTR
 user_esp_platform_reset_mode(void)
 {
-    if (wifi_get_opmode() == STATION_MODE) {
+    if (wifi_get_opmode()==STATION_MODE) {
         wifi_set_opmode(STATIONAP_MODE);
     }
 
@@ -575,12 +573,12 @@ user_esp_platform_recon_cb(void *arg, sint8 err)
 // !!!Check logic over here
 
 
-    if (++device_recon_count == 5) {
+    if (++device_recon_count==5) {
         device_status = DEVICE_CONNECT_SERVER_FAIL;
         if (user_esp_platform_reset_mode()) return; 
     }
 
-    if (wifi_get_opmode() == STATION_MODE) { user_esp_platform_reset_mode(); }
+    if (wifi_get_opmode()==STATION_MODE) { user_esp_platform_reset_mode(); }
     else {
         os_timer_disarm(&client_timer);
         os_timer_setfn(&client_timer, (os_timer_func_t *)user_esp_platform_reconnect, pespconn);
@@ -601,7 +599,7 @@ user_esp_platform_connect_cb(void *arg)
     struct espconn *pespconn = arg;
 
     ESP_DBG("user_esp_platform_connect_cb\n");
-    if (wifi_get_opmode() ==  STATIONAP_MODE ) {
+    if (wifi_get_opmode()== STATIONAP_MODE ) {
         wifi_set_opmode(STATION_MODE);
     }
 
@@ -647,10 +645,10 @@ user_esp_platform_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 {
     struct espconn *pespconn = (struct espconn *)arg;
 
-    if (ipaddr == NULL) {
+    if (ipaddr==NULL) {
         ESP_DBG("user_esp_platform_dns_found NULL\n");
 
-        if (++device_recon_count == 5) {
+        if (++device_recon_count==5) {
             device_status = DEVICE_CONNECT_SERVER_FAIL;
 
             user_esp_platform_reset_mode();
@@ -663,7 +661,7 @@ user_esp_platform_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
             *((uint8 *)&ipaddr->addr), *((uint8 *)&ipaddr->addr + 1),
             *((uint8 *)&ipaddr->addr + 2), *((uint8 *)&ipaddr->addr + 3));
 
-    if (esp_server_ip.addr == 0 && ipaddr->addr != 0) {
+    if (esp_server_ip.addr==0 && ipaddr->addr!=0) {
         os_timer_disarm(&client_timer);
         esp_server_ip.addr = ipaddr->addr;
         os_memcpy(pespconn->proto.tcp->remote_ip, &ipaddr->addr, 4);
@@ -728,7 +726,7 @@ user_esp_platform_check_ip(uint8 reset_flag)
 
     wifi_get_ip_info(STATION_IF, &ipconfig);
 
-    if (wifi_station_get_connect_status() == STATION_GOT_IP && ipconfig.ip.addr != 0) {
+    if (wifi_station_get_connect_status()==STATION_GOT_IP && ipconfig.ip.addr!=0) {
         user_link_led_timer_init();
         user_conn.proto.tcp = &user_tcp;
         user_conn.type = ESPCONN_TCP;
@@ -760,9 +758,9 @@ user_esp_platform_check_ip(uint8 reset_flag)
 #endif
     } else {
         /* if there are wrong while connecting to some AP, then reset mode */
-        if ((wifi_station_get_connect_status() == STATION_WRONG_PASSWORD ||
-                wifi_station_get_connect_status() == STATION_NO_AP_FOUND ||
-                wifi_station_get_connect_status() == STATION_CONNECT_FAIL)) {
+        if ((wifi_station_get_connect_status()==STATION_WRONG_PASSWORD ||
+                wifi_station_get_connect_status()==STATION_NO_AP_FOUND ||
+                wifi_station_get_connect_status()==STATION_CONNECT_FAIL)) {
             user_esp_platform_reset_mode();
         } else {
             os_timer_setfn(&client_timer, (os_timer_func_t *)user_esp_platform_check_ip, NULL);
@@ -788,15 +786,15 @@ void ICACHE_FLASH_ATTR user_esp_platform_init(void) {
     struct dhcp_client_info dhcp_info;
     struct ip_info sta_info;
     system_rtc_mem_read(64,&dhcp_info,sizeof(struct dhcp_client_info));
-    if(dhcp_info.flag == 0x01 ) {
-        if (true == wifi_station_dhcpc_status())
+    if(dhcp_info.flag==0x01 ) {
+        if (true==wifi_station_dhcpc_status())
         {
             wifi_station_dhcpc_stop();
         }
         sta_info.ip = dhcp_info.ip_addr;
         sta_info.gw = dhcp_info.gw;
         sta_info.netmask = dhcp_info.netmask;
-        if ( true != wifi_set_ip_info(STATION_IF,&sta_info)) {
+        if ( true!=wifi_set_ip_info(STATION_IF,&sta_info)) {
             os_printf("set default ip wrong\n");
         }
     }
@@ -809,7 +807,7 @@ void ICACHE_FLASH_ATTR user_esp_platform_init(void) {
 #endif
 
     //if not activated,open softap interface
-    if (esp_param.activeflag != 1) {
+    if (esp_param.activeflag!=1) {
 #ifdef LOW_POWER_MODE
         struct softap_config config_softap;
         char ssid[33]={0};
@@ -839,10 +837,32 @@ void ICACHE_FLASH_ATTR user_esp_platform_init(void) {
     }
     user_sensor_init(esp_param.activeflag);
 
-    if (wifi_get_opmode() != SOFTAP_MODE) {
+    if (wifi_get_opmode()!=SOFTAP_MODE) {
         os_timer_disarm(&client_timer);
         os_timer_setfn(&client_timer, (os_timer_func_t *)user_esp_platform_check_ip, 1);
         os_timer_arm(&client_timer, 100, 0);
     }
 }
 
+//
+//    struct softap_config config_softap;
+//    char ssid[33]={0};
+//    os_sprintf(ssid,"MADCOWMOOMOO_SENSOR_%06X",system_get_chip_id());
+//    char ssid[33]={0};
+//    setup_softAP(config_softap, ssid, auth_mode, password);
+//
+//void setup_softAP(softap_config &config_softap, char* ssid, int auth_mode, char* password) {
+//    wifi_softap_get_config(config_softap);
+//    // TODO: Add range check to ensure that passwords are not the wrong len and no overflow.
+//    // Set password
+//    os_memset(config_softap.password, 0, sizeof(config_softap.password));
+//    os_memcpy(config_softap.password, password, os_strlen(password));
+//    config_softap->password_len = os_strlen(password);
+//    // Set SSID
+//    os_memset(config_softap.ssid, 0, sizeof(config_softap.ssid));
+//    os_memcpy(config_softap.ssid, ssid, os_strlen(ssid));
+//    config_softap.ssid_len = os_strlen(ssid);
+//    // Set authentication mode
+//    config_softap->authmode = auth_mode;
+//    wifi_softap_set_config(config_softap);
+//}

@@ -1011,18 +1011,16 @@ LOCAL local_upgrade_deinit(void)
  *                length -- The length of upgrade data
  * Returns      : none
 *******************************************************************************/
-LOCAL void
-local_upgrade_download(void * arg,char *pusrdata, unsigned short length)
-{
-    char *ptr = NULL;
+LOCAL void local_upgrade_download(void * arg,char *pusrdata, unsigned short length) {
+    char *ptr   = NULL;
     char *ptmp2 = NULL;
     char lengthbuffer[32];
     static uint32 totallength = 0;
-    static uint32 sumlength = 0;
-    struct espconn *pespconn = arg;
+    static uint32 sumlength   = 0;
+    struct espconn *pespconn  = arg;
 
-    if (totallength == 0 && (ptr = (char *)os_strstr(pusrdata, "\r\n\r\n")) != NULL &&
-            (ptr = (char *)os_strstr(pusrdata, "Content-Length")) != NULL) {
+    if (totallength == 0 && (ptr = (char *)os_strstr(pusrdata, "\r\n\r\n"))!=NULL &&
+            (ptr=(char *)os_strstr(pusrdata, "Content-Length"))!=NULL) {
         ptr = (char *)os_strstr(pusrdata, "\r\n\r\n");
         length -= ptr - pusrdata;
         length -= 4;
@@ -1070,18 +1068,15 @@ local_upgrade_download(void * arg,char *pusrdata, unsigned short length)
  *                length -- The length of received data
  * Returns      : none
 *******************************************************************************/
-LOCAL void ICACHE_FLASH_ATTR
-webserver_recv(void *arg, char *pusrdata, unsigned short length)
-{
+LOCAL void ICACHE_FLASH_ATTR webserver_recv(void *arg, char *pusrdata, unsigned short length) {
     URL_Frame *pURL_Frame = NULL;
-    char *pParseBuffer = NULL;
-    bool parse_flag = false;
+    char *pParseBuffer    = NULL;
+    bool parse_flag       = false;
     struct espconn *ptrespconn = arg;
 	
-    if(upgrade_lock == 0){
-
+    if(upgrade_lock==0) {
     	parse_flag = save_data(pusrdata, length);
-        if (parse_flag == false) {
+        if (parse_flag==false) {
         	response_send(ptrespconn, false);
 			return;
         }
@@ -1337,11 +1332,8 @@ void webserver_recon(void *arg, sint8 err)
  * Parameters   : arg -- Additional argument to pass to the callback function
  * Returns      : none
 *******************************************************************************/
-LOCAL ICACHE_FLASH_ATTR
-void webserver_discon(void *arg)
-{
+LOCAL ICACHE_FLASH_ATTR void webserver_discon(void *arg) {
     struct espconn *pesp_conn = arg;
-
     os_printf("webserver's %d.%d.%d.%d:%d disconnect\n", pesp_conn->proto.tcp->remote_ip[0],
         		pesp_conn->proto.tcp->remote_ip[1],pesp_conn->proto.tcp->remote_ip[2],
         		pesp_conn->proto.tcp->remote_ip[3],pesp_conn->proto.tcp->remote_port);
@@ -1353,11 +1345,8 @@ void webserver_discon(void *arg)
  * Parameters   : arg -- Additional argument to pass to the callback function
  * Returns      : none
 *******************************************************************************/
-LOCAL void ICACHE_FLASH_ATTR
-webserver_listen(void *arg)
-{
+LOCAL void ICACHE_FLASH_ATTR webserver_listen(void *arg) {
     struct espconn *pesp_conn = arg;
-
     espconn_regist_recvcb(pesp_conn, webserver_recv);
     espconn_regist_reconcb(pesp_conn, webserver_recon);
     espconn_regist_disconcb(pesp_conn, webserver_discon);
@@ -1365,13 +1354,11 @@ webserver_listen(void *arg)
 
 /******************************************************************************
  * FunctionName : user_webserver_init
- * Description  : parameter initialize as a server
+ * Description  : parameter initialize as a webserver
  * Parameters   : port -- server port
  * Returns      : none
 *******************************************************************************/
-void ICACHE_FLASH_ATTR
-user_webserver_init(uint32 port)
-{
+void ICACHE_FLASH_ATTR user_webserver_init(uint32 port) {
     LOCAL struct espconn esp_conn;
     LOCAL esp_tcp esptcp;
 
